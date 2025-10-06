@@ -102,7 +102,7 @@ project-collab-platform/
 - **Axios** - HTTP client
 - **Socket.IO Client** - WebSocket client
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Node.js (v16 or higher)
 - MongoDB (v4.4 or higher)
