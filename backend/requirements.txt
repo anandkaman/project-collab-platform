@@ -1,0 +1,9 @@
+express 
+mongoose 
+cors 
+dotenv 
+bcryptjs 
+jsonwebtoken 
+socket.io 
+chokidar
+
