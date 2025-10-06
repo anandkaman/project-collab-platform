@@ -15,7 +15,7 @@ A real-time collaborative development platform for teams to manage projects, ass
 - **Resizable Panels**: Drag-to-resize code editor and preview panels
 - **BAT File Execution**: Execute batch files to run projects
 
-## 📁 Project Structure
+## Project Structure
 ```bash
 project-collab-platform/
 ├── backend/
@@ -84,7 +84,7 @@ project-collab-platform/
 └── TECHNICALDOC.md
 ```
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 ### Backend
 - **Node.js** & **Express.js** - Server and API
@@ -109,7 +109,7 @@ project-collab-platform/
 - Git Bash or any terminal
 - npm or yarn
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -137,7 +137,7 @@ npm run dev **or** npm start
 Backend will run on `http://localhost:5000`
 
 
-### 3. Frontend Setup
+### 3.Frontend Setup
 
 Open a new terminal:
 
