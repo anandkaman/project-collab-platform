@@ -1,39 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const useWebSocket = (projectId) => {
-  const [output, setOutput] = useState([]);
+  const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
-  const socketRef = useRef(null);
-  
+
   useEffect(() => {
-    socketRef.current = io('http://localhost:5000');
+    if (!projectId) return;
+
+    // Use environment variable or fallback to localhost
+    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     
-    socketRef.current.on('connect', () => {
+    const newSocket = io(SOCKET_URL, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    newSocket.on('connect', () => {
+      console.log('✅ WebSocket connected');
       setConnected(true);
-      if (projectId) {
-        socketRef.current.emit('joinProject', projectId);
-      }
+      newSocket.emit('joinProject', projectId);
     });
-    
-    socketRef.current.on('executionOutput', (data) => {
-      setOutput(prev => [...prev, data]);
-    });
-    
-    socketRef.current.on('fileChanged', (data) => {
-      console.log('File changed:', data);
-    });
-    
-    socketRef.current.on('disconnect', () => {
+
+    newSocket.on('disconnect', () => {
+      console.log('❌ WebSocket disconnected');
       setConnected(false);
     });
-    
+
+    newSocket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+      setConnected(false);
+    });
+
+    setSocket(newSocket);
+
     return () => {
-      socketRef.current.disconnect();
+      if (newSocket) {
+        newSocket.disconnect();
+      }
     };
   }, [projectId]);
-  
-  return { socket: socketRef.current, output, connected };
+
+  return { socket, connected };
 };
 
 export default useWebSocket;
