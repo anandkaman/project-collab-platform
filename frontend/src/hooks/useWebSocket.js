@@ -20,13 +20,13 @@ const useWebSocket = (projectId) => {
     });
 
     newSocket.on('connect', () => {
-      console.log('✅ WebSocket connected');
+      console.log('WebSocket connected');
       setConnected(true);
       newSocket.emit('joinProject', projectId);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('❌ WebSocket disconnected');
+      console.log('WebSocket disconnected');
       setConnected(false);
     });
 
