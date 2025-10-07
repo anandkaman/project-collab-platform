@@ -1,50 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 
 const useWebSocket = (projectId) => {
-  const [socket, setSocket] = useState(null);
+  const [output, setOutput] = useState([]);
   const [connected, setConnected] = useState(false);
-
+  const socketRef = useRef(null);
+  
   useEffect(() => {
-    if (!projectId) return;
-
-    // Use environment variable or fallback to localhost
-    const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    socketRef.current = io('http://localhost:5000');
     
-    const newSocket = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
-      withCredentials: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    newSocket.on('connect', () => {
-      console.log('WebSocket connected');
+    socketRef.current.on('connect', () => {
       setConnected(true);
-      newSocket.emit('joinProject', projectId);
-    });
-
-    newSocket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
-      setConnected(false);
-    });
-
-    newSocket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
-      setConnected(false);
-    });
-
-    setSocket(newSocket);
-
-    return () => {
-      if (newSocket) {
-        newSocket.disconnect();
+      if (projectId) {
+        socketRef.current.emit('joinProject', projectId);
       }
+    });
+    
+    socketRef.current.on('executionOutput', (data) => {
+      setOutput(prev => [...prev, data]);
+    });
+    
+    socketRef.current.on('fileChanged', (data) => {
+      console.log('File changed:', data);
+    });
+    
+    socketRef.current.on('disconnect', () => {
+      setConnected(false);
+    });
+    
+    return () => {
+      socketRef.current.disconnect();
     };
   }, [projectId]);
-
-  return { socket, connected };
+  
+  return { socket: socketRef.current, output, connected };
 };
 
 export default useWebSocket;
